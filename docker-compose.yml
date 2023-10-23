@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+
+  application:
+    hostname: ${APPLICATION}
+    container_name: ${APPLICATION}
+    build: .
+    restart: always
+    ports:
+      - "${APPLICATION_PORT}:${APPLICATION_PORT}"
+    environment:
+      ENCRYPT_KEY: ${SPRING_CLOUD_CONFIG_PROPERTIES_ENCRYPT_KEY}
+      JAVA_OPTS: |
+        -Dspring.profiles.active=docker
+        -Dserver.port=${APPLICATION_PORT}
+        -Dspring.cloud.config.server.git.uri=${SPRING_CLOUD_CONFIG_PROPERTIES_REPOSITORY}
+        -Dspring.cloud.config.server.git.default-label=${SPRING_CLOUD_CONFIG_PROPERTIES_REPOSITORY_LABEL}
+        -Dspring.cloud.config.server.git.search-paths={application}
+        -Dspring.cloud.config.server.git.force-pull=true
+        -Dspring.cloud.config.server.git.clone-on-start=true
+
+networks:
+  default:
+    external: true
+    name: ${DOCKER_NETWORK}
